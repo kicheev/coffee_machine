@@ -1,44 +1,61 @@
-def min_cups_from_supplies(dict):
-    min_cups = dict['water']['supply remaining'] // dict['water']['one cup']
-    current_cups = 0
-    for value in dict.values():
-        current_cups = value['supply remaining'] // value['one cup']
-        if current_cups < min_cups:
-            min_cups = current_cups
-    return min_cups
+def print_supply(supply):
+    print('The coffee machine has:')
+    for key, value in supply.items():
+        print(f'{value} of {key}')
 
 
-def check_cups(user_need_cups, cups_remaining):
-    if user_need_cups == cups_remaining:
-        print('Yes, I can make that amount of coffee')
-    elif user_need_cups < cups_remaining:
-        print(f'Yes, I can make that amount of coffee (and even {cups_remaining - user_need_cups} more than that)')
-    else:
-        print(f'No, I can make only {cups_remaining} cups of coffee')
+def menu():
+    print_supply(supply)
+    print()
+
+    action = input('Write action (buy, fill, take):\n')
+    if action == 'buy':
+        buy()
+    elif action == 'fill':
+        fill()
+    elif action == 'take':
+        take()
+
+    print()
+    print_supply(supply)
 
 
-status_of_making_coffee = ['Starting to make a coffee',
-                 'Grinding coffee beans',
-                 'Boiling water',
-                 'Mixing boiled water with crushed coffee beans',
-                 'Pouring coffee into the cup',
-                 'Pouring some milk into the cup',
-                 'Coffee is ready!']
+def buy():
+    global supply
+    global coffee_types
 
-# one_cup_composition = {'water': [200, 'ml'],
-#                        'milk': [50, 'ml'],
-#                        'coffee beans': [15, 'grams']}
+    coffee_type = int(input('What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:\n'))
+    for key, value in coffee_types[coffee_type].items():
+        supply[key] -= value
 
-supplies = {'water': {'unit': 'ml', 'one cup': 200, 'supply remaining': 0},
-            'milk': {'unit': 'ml', 'one cup': 50, 'supply remaining': 0},
-            'coffee beans': {'unit': 'grams', 'one cup': 15, 'supply remaining': 0}}
 
-for key, value in supplies.items():
-    supplies[key]['supply remaining'] = int(input(f"Write how many {value['unit']} of {key} the coffee machine has:\n"))
+def fill():
+    global supply
 
-user_need_cups = int(input('Write how many cups of coffee you will need:\n'))
+    supply['water'] += int(input('Write how many ml of water do you want to add:\n'))
+    supply['milk'] += int(input('Write how many ml of milk do you want to add:\n'))
+    supply['coffee beans'] += int(input('Write how many grams of coffee beans do you want to add:\n'))
+    supply['disposable cups'] += int(input('Write how many disposable cups of coffee do you want to add:\n'))
 
-check_cups(user_need_cups, min_cups_from_supplies(supplies))
+
+def take():
+    global supply
+
+    print(f"I gave you ${supply['money']}")
+    supply['money'] = 0
+
+
+supply = {'water': 1200,
+          'milk': 540,
+          'coffee beans': 120,
+          'disposable cups': 9,
+          'money': 550}
+
+coffee_types = {1: {'water': 250, 'coffee beans': 16, 'disposable cups': 1, 'money': -4},
+                2: {'water': 350, 'milk': 75, 'coffee beans': 20, 'disposable cups': 1, 'money': -7},
+                3: {'water': 200, 'milk': 100, 'coffee beans': 12, 'disposable cups': 1, 'money': -6}}
+
+menu()
 
 
 
