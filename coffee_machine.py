@@ -1,32 +1,43 @@
-def print_supply(supply):
-    print('The coffee machine has:')
-    for key, value in supply.items():
-        print(f'{value} of {key}')
-
-
 def menu():
-    print_supply(supply)
-    print()
-
-    action = input('Write action (buy, fill, take):\n')
-    if action == 'buy':
-        buy()
-    elif action == 'fill':
-        fill()
-    elif action == 'take':
-        take()
-
-    print()
-    print_supply(supply)
+    while True:
+        action = input('Write action (buy, fill, take, remaining, exit):\n')
+        print()
+        if action == 'remaining':
+            remaining(supply)
+        elif action == 'buy':
+            buy()
+        elif action == 'fill':
+            fill()
+        elif action == 'take':
+            take()
+        elif action == 'exit':
+            break
+        else:
+            print('Unknown action.')
+        print()
 
 
 def buy():
     global supply
     global coffee_types
+    check_supply = True
 
-    coffee_type = int(input('What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:\n'))
+    coffee_type = input('What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:\n')
+    if coffee_type == 'back':
+        return
+
+    coffee_type = int(coffee_type)
+
     for key, value in coffee_types[coffee_type].items():
-        supply[key] -= value
+        if supply[key] - value < 0:
+            print(f'Sorry, not enough {key}!')
+            check_supply = False
+            break
+
+    if check_supply:
+        for key, value in coffee_types[coffee_type].items():
+            supply[key] -= value
+        print('I have enough resources, making you a coffee!')
 
 
 def fill():
@@ -45,7 +56,13 @@ def take():
     supply['money'] = 0
 
 
-supply = {'water': 1200,
+def remaining(supply):
+    print('The coffee machine has:')
+    for key, value in supply.items():
+        print(('$' if key == 'money' else '') + f'{value} of {key}')
+
+
+supply = {'water': 400,
           'milk': 540,
           'coffee beans': 120,
           'disposable cups': 9,
